@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html ng-app="app">
+<head>
+    <title>AngularJS Tutorials</title>
+    <!--libs-->
+    <script type="text/javascript" src="js/lib/angular.js"></script>
+    <script type="text/javascript" src="js/lib/angular-route.js"></script>
+    <script type="text/javascript" src="js/lib/ui-bootstrap-tpls-0.12.1.js"></script>
+    <script type="text/javascript" src="js/lib/angular-touch.js"></script>
+    <script type="text/javascript" src="js/lib/ui-grid-unstable.js"></script>
+    <!--js-->
+    <script type="text/javascript" src="js/ticket-factory.js"></script>
+    <script type="text/javascript" src="js/ticket-controller.js"></script>
+    <script type="text/javascript" src="js/ticket-filter.js"></script>
+    <script type="text/javascript" src="js/ticket-modal-controller.js"></script>
+    <!-- Bootstrap Core CSS -->
+    <link rel="styleSheet" href="css/ui-grid.css"/>
+    <link rel="stylesheet" href="css/bootstrap.min.css">
+
+
+</head>
+<body style="padding: 20px 20px;">
+<div ng-controller="TicketController">
+
+
+    <p>
+
+    <h3 class="span7 text-center"><strong>E-mails</strong></h3></p>
+    <p>
+        <button class="btn btn-large btn-primary" type="button" ng-click="open()">Leer</button>
+    </p>
+
+
+    <div ui-grid="gridOptions" ui-grid-resize-column ui-grid-cellnavs
+         class="gridStyle"  ui-grid-pagination ui-grid-selection>
+    </div>
+
+
+</div>
+</body>
+</html>
