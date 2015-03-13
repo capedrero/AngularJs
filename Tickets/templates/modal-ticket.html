@@ -1,11 +1,66 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="iso-8859-1">
+</head>
+<body style="padding: 20px 20px;">
+
+    <div class="modal-dialog">
 <div class="modal-header">
-    <h3 class="modal-title">MENSAJE</h3>
+    <h3 class="modal-title">Ticket</h3>
 </div>
-<div class="modal-body">
-      <b>{{selected.msg}}</b>
+    <div class="modal-body">
+        <form name="formItem" class="form-horizontal" novalidate>
+        <div class="form-group" ng-class="{ 'has-error' : isInvalid('name') }">
+            <label class="col-xs-2"> Nombre: </label>
+            <div class="col-xs-6">
+                <input type="text" name="name" class="form-control ng-pristine ng-valid" ng-model="selected.name" placeholder="Nombre del Ticket" required/>
+                <small ng-show="isInvalidField('name', 'required')" class="help-block">Nombre requerido</small>
+            </div>
+        </div>
+        <div class="form-group"  ng-class="{ 'has-error' : isInvalid('subject') }">
+            <label class="col-xs-2"> Asunto: </label>
+            <div class="col-xs-6">
+                <input type="text" name="subject" class="form-control ng-pristine ng-valid" ng-model="selected.subject" placeholder="Asunto del Ticket" required/>
+                <small ng-show="isInvalidField('subject', 'required')" class="help-block">Asunto requerido</small>
+            </div>
+        </div>
+        <div class="form-group"  ng-class="{ 'has-error' : isInvalid('mail') }">
+            <label class="col-xs-2"> Email: </label>
+            <div class="col-xs-6">
+                <input type="email" name="mail" class="form-control"  placeholder="Ticket E-mail" ng-model="selected.mail"  ng-minlength="6" required/>
+                <small ng-show="isInvalidField('mail','required')" class="help-block">Email requerido</small>
+                <small ng-show="isInvalid('mail')" class="help-block">Email no valido</small>
+            </div>
+        </div>
+
+
+        <div class="form-group"  ng-class="{ 'has-error' : isInvalid('msg') }">
+            <label class="col-xs-2"> Texto: </label>
+            <div class="col-xs-8">
+                <textarea   ng-minlength="3" style="resize:none" rows="3" type="text" name="msg" class="form-control ng-pristine ng-valid" ng-model="selected.msg" placeholder="Descripción del Ticket" required></textarea>
+                <small ng-show="isInvalidField('msg','required')" class="help-block">Texto requerido</small>
+                <small ng-show="isInvalidField('msg', 'minlength')" class="help-block">Texto de al menos 3 caracteres</small>
+            </div>
+        </div>
+
+        </form>
+    </div>
+        <div class="modal-footer">
+            <a class="btn" ng-click="cancel()">Cancelar</a>
+            <button ng-click="alta()" ng-show="isAlta() && formItem.$valid" class="btn btn-primary" type="submit">Alta</button>
+            <button ng-click="update()" ng-show="isEdicion() && formItem.$valid" class="btn btn-primary" type="submit">Actualizar</button>
+            <button ng-click="asViewed()" ng-show="isEdicion() && formItem.$valid" class="btn btn-warning" type="submit">Marcar como no leido</button>
+            <button ng-click="baja()" ng-show="isBaja() && formItem.$valid" class="btn btn-warning"  type="submit">Borrar</button>
+        </div>
+
+
+
 </div>
-<div class="modal-footer">
-    <button class="btn btn-primary" ng-click="ok()">Marcar como no leido</button>
-    <button class="btn btn-warning" ng-click="cancel()">Cancel</button>
-</div>
+
+</body>
+</html>
+
+
+
 

@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html ng-app="app">
+<html ng-app="app" >
 <head>
     <title>AngularJS Tutorials</title>
     <!--libs-->
@@ -7,33 +7,39 @@
     <script type="text/javascript" src="js/lib/angular-route.js"></script>
     <script type="text/javascript" src="js/lib/ui-bootstrap-tpls-0.12.1.js"></script>
     <script type="text/javascript" src="js/lib/angular-touch.js"></script>
-    <script type="text/javascript" src="js/lib/ui-grid-unstable.js"></script>
+    <script type="text/javascript" src="js/lib/ui-grid.js"></script>
     <!--js-->
     <script type="text/javascript" src="js/ticket-factory.js"></script>
     <script type="text/javascript" src="js/ticket-controller.js"></script>
     <script type="text/javascript" src="js/ticket-filter.js"></script>
     <script type="text/javascript" src="js/ticket-modal-controller.js"></script>
+    <script type="text/javascript" src="js/angular-confirm.js"></script>
     <!-- Bootstrap Core CSS -->
-    <link rel="styleSheet" href="css/ui-grid.css"/>
+    <link rel="styleSheet" href="css/ui-grid-unstable.css"/>
     <link rel="stylesheet" href="css/bootstrap.min.css">
-
 
 </head>
 <body style="padding: 20px 20px;">
 <div ng-controller="TicketController">
 
-
+  <p><h3 class="span7 text-center"><strong>Tickets</strong></h3></p>
     <p>
-
-    <h3 class="span7 text-center"><strong>E-mails</strong></h3></p>
-    <p>
-        <button class="btn btn-large btn-primary" type="button" ng-click="open()">Leer</button>
+    <button class="btn btn-large btn-primary" type="button" ng-click="addTicket()"><i class="glyphicon glyphicon-plus"></i>&nbsp;Nuevo</button>
+    <button class="btn btn-large btn-primary" type="button" ng-click="readTicket()">Leer</button>
+        <button class="btn btn-large btn-primary" type="button" ng-click="readTicketToUpdate()">Actualizar</button>
+    <button class="btn btn-large btn-primary" type="button" ng-click="removeTicket()">Eliminar</button>
     </p>
-
-
-    <div ui-grid="gridOptions" ui-grid-resize-column ui-grid-cellnavs
-         class="gridStyle"  ui-grid-pagination ui-grid-selection>
-    </div>
+    <p>
+    <div ui-grid="gridOptions" ui-grid-resize-column
+         class="gridStyle"  ui-grid-pagination ui-grid-selection></div>
+    </p>
+    <p class="pull-right">
+        Pagina: {{ gridApi.pagination.getPage() }} de {{ gridApi.pagination.getTotalPages() }}</p>
+    <p class="pull-left">
+        <button ng-show="gridApi.pagination.getPage()!==1" type="button" class="btn btn-success" ng-click="gridApi.pagination.previousPage()" >Pag. Anterior</button>
+        <button ng-show="gridApi.pagination.getPage()!==gridApi.pagination.getTotalPages()" type="button" class="btn btn-success" ng-click="gridApi.pagination.nextPage()">Pag. Siguiente</button>
+    </p>
+    </section>
 
 
 </div>

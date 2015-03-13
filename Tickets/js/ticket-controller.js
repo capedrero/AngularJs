@@ -3,49 +3,55 @@ angular.module('app', ['ticket.modal.controller', 'ticket.filter', 'ticket.facto
 .config(function($routeProvider){
   $routeProvider.when("/",
     {
-      templateUrl: "app.html",
-      controller: "ctrl"
+      templateUrl: "index.html",
+      controller: "TicketController"
     }
   );
 
 })
 
+.controller('TicketController', function($http, $scope, $log, $modal, ftickets, ShareData, MAP_ICONS, TIPOS) {
 
+  $http.get('/Tickets/json/data.json').
+      success(function(data, status, headers, config) {
 
-.controller('TicketController', function($scope, $log, $modal, ftickets, ShareData) {
-
-  $scope.tickets = ftickets;
+        $scope.tickets = data;
+      }).error(function(data, status, headers, config) {
+        // called asynchronously if an error occurs
+        // or server returns response with an error status.
+      });
+   //   $http(req).success(function(){...}).error(function(){...});
   $scope. showIcon = function(input){
 
-      const mapTypes = ['glyphicon glyphicon-folder-close', 'glyphicon glyphicon-folder-open'];
+      //const mapTypes = ['glyphicon glyphicon-folder-close', 'glyphicon glyphicon-folder-open'];
 
-        if (!angular.isDefined || input === false) {
-          return mapTypes[0];
+        if (!angular.isDefined(input) || input === false) {
+          return MAP_ICONS[0];
         }
-        return mapTypes[1];
+        return MAP_ICONS[1];
       };
 
   var statusTemplate = '<div class=\"container\"><i class=\"{{grid.appScope.showIcon(row.entity.viewed)}}\"</i></div>';
   $scope.gridOptions = {
-    minRowsToShow:7,
-    enablePaginationControls:true,
-    paginationPageSizes: [5, 15, 30],
-    paginationPageSize: 5,
-    multiSelect:false,
-    enableRowSelection: true,
+    minRowsToShow:5,
+    enablePaginationControls:false,
+    paginationPageSize: 4,
+    multiSelect:true,
     enableSelectAll: false,
     enableFiltering: false,
     enableColumnResize : true,
-    showGridFooter:true,
+    showGridFooter:false,
     noTabInterference: true,
     enableColumnResizing: true,
-    enableCellSelection: false,
     enableHorizontalScrollbar:true,
     data: 'tickets',
     enableColumnMenus:true,
     enableGridMenu: true,
-    showGridFooter:false,
-    //glyphicons glyphicons-message-flag
+    multiSelect : false,
+    modifierKeysToMultiSelect : false,
+    noUnselect : true,
+    enableRowSelection: true,
+    enableRowHeaderSelection: false,
     columnDefs: [{
       enableColumnMenu:false,
       name: 'viewed',
@@ -66,8 +72,7 @@ angular.module('app', ['ticket.modal.controller', 'ticket.filter', 'ticket.facto
     }, {
         name: 'date',
         displayName: 'Fecha',
-        cellFilter:  "date: 'yyyy-MM-dd HH:mm'",
-        type: 'date'
+        cellFilter:  "date: 'yyyy-MM-dd HH:mm'"
       }
     ]
   };
@@ -76,37 +81,123 @@ angular.module('app', ['ticket.modal.controller', 'ticket.filter', 'ticket.facto
   $scope.gridOptions.onRegisterApi = function (gridApi) {
     $scope.gridApi = gridApi;
     $scope.gridApi.selection.on.rowSelectionChanged($scope,function (row) {
-      if (row.isSelected) {
-        ShareData.setSelectedRow(row.entity);
-
-      }
-
+      ShareData.setSelectedRow(row.isSelected?row.entity:undefined);
     });
+
   }
+      /**
+       * Elimina el elemento seleccionado.
+       */
+  $scope.removeTicket = function(){
 
-  $scope.open = function (size) {
+    if(!angular.isDefined(ShareData.getSelectedRow())){
+      return;
+    }
 
-  if(angular.equals({}, ShareData.getSelectedRow())){
+      var index = $scope.tickets.indexOf(ShareData.getSelectedRow());
+      $scope.tickets.splice(index, 1);
+    $scope.gridApi.selection.clearSelectedRows();
+    ShareData.clearSelectedRow();
+    ShareData.clearType();
+  };
+      /**
+       * Consultar un ticket
+       */
+$scope.readTicket = function () {
+        if(!angular.isDefined(ShareData.getSelectedRow())){
+          return;
+        }
+
+        var modalInstance = $modal.open({
+          templateUrl: 'templates/modal-ticket-read.html',
+          controller: 'ModalInstanceCtrl',
+          size: 'lg',
+          resolve: {
+            item: function () {
+              //Al abrir el modal, se le añade lo que queremos pasar
+              ShareData.getSelectedRow().viewed = true;
+              return ShareData;
+            }
+          }
+        });
+        modalInstance.result.then(function (selectedItem) {
+          //Aqui habria que marcar como no viewed
+          ShareData.getSelectedRow().viewed=false;
+
+          $scope.gridApi.selection.clearSelectedRows();
+          ShareData.clearSelectedRow();
+          ShareData.clearType();
+
+        }, function () {
+          $scope.gridApi.selection.clearSelectedRows();
+          ShareData.clearSelectedRow();
+          ShareData.clearType();
+        });
+      }
+  /**
+   * Abre para actualizar el panel modal.
+    * @param size
+   */
+  $scope.readTicketToUpdate = function () {
+
+    if(!angular.isDefined(ShareData.getSelectedRow())){
     return;
   }
+
     var modalInstance = $modal.open({
       templateUrl: 'templates/modal-ticket.html',
       controller: 'ModalInstanceCtrl',
-      size: size,
+      size: 'lg',
       resolve: {
         item: function () {
+          //Al abrir el modal, se le añade lo que queremos pasar
           ShareData.getSelectedRow().viewed = true;
-          return ShareData.getSelectedRow();
+          ShareData.setType(TIPOS.EDICION);
+          return ShareData;
         }
       }
     });
       modalInstance.result.then(function (selectedItem) {
-      //Aqui habria que marcar como no viewed
-       // $scope.selected = ShareData.getSelectedRow();
-        ShareData.getSelectedRow().viewed=false;
+        var index = $scope.tickets.indexOf(ShareData.getSelectedRow());
+        $scope.tickets.splice(index, 1, selectedItem);
+
+        $scope.gridApi.selection.clearSelectedRows();
+        ShareData.clearSelectedRow();
+        ShareData.clearType();
+
     }, function () {
-      //Si ha pulsado cancelar
-      $log.log('Modal dismissed at: ' + new Date());
+        $scope.gridApi.selection.clearSelectedRows();
+        ShareData.clearSelectedRow();
+        ShareData.clearType();
     });
   };
+      /**
+       * Añadir un nuevo ticket
+       */
+$scope.addTicket = function () {
+        var modalInstance = $modal.open({
+          templateUrl: 'templates/modal-ticket.html',
+          controller: 'ModalInstanceCtrl',
+          size: 'lg',
+          resolve: {
+            item: function () {
+              //Al abrir el modal, se le añade lo que queremos pasar
+              ShareData.clearSelectedRow();
+              ShareData.setType(TIPOS.ALTA);
+              return ShareData;
+            }
+          }
+        });
+        modalInstance.result.then(function (selectedItem) {
+          $scope.tickets.push(selectedItem);
+
+          $scope.gridApi.selection.clearSelectedRows();
+          ShareData.clearSelectedRow();
+          ShareData.clearType();
+        }, function () {
+          $scope.gridApi.selection.clearSelectedRows();
+          ShareData.clearSelectedRow();
+          ShareData.clearType();
+        });
+      };
 });

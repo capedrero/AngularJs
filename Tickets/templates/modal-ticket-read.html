@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="iso-8859-1">
+</head>
+<body>
+<div style="padding: 50px 50px;">
+    <div class="modal-header">
+    <h3 class="modal-title">Ticket</h3>
+</div>
+<div class="modal-body">
+    <p><b>Nombre:</b>{{selected.name}}</p>
+    <p><b>Asunto:</b>{{selected.subject}}</p>
+    <p><b>Email:</b>{{selected.mail}}</p>
+    <hr>
+    <b>Texto</b>
+    <p><i>{{selected.msg}}</i></p>
+</div>
+<div class="modal-footer">
+    <a class="btn" ng-click="cancel()">Cancelar</a>
+    <button class="btn btn-warning" ng-click="asViewed()">Marcar como no leido</button>
+</div>
+</div>
+</body>
+</html>
